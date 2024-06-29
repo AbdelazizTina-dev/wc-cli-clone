@@ -14,9 +14,18 @@ class WCCloneCli(cmd.Cmd):
             case "-c":
                 size = Path(f"{self.current_dir}/{file_name}/").stat().st_size
                 print(f"{size} {file_name}")
+            case "-l":
+                print(f"{count_lines(file_name)} {file_name}")
 
 
-def parse(arg):
+def count_lines(filename: str) -> int:
+    lines = 0
+    for _ in open(filename):
+        lines += 1
+    return lines
+
+
+def parse(arg: str) -> tuple[str, str]:
     "Convert a series of zero or more args to an argument tuple"
     return tuple(arg.split())
 
