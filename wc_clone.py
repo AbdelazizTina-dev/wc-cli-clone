@@ -16,11 +16,21 @@ class WCCloneCli(cmd.Cmd):
                 print(f"{size} {file_name}")
             case "-l":
                 print(f"{count_lines(file_name)} {file_name}")
+            case "-w":
+                print(f"{count_words(file_name)} {file_name}")
+
+
+def count_words(filename: str) -> int:
+    file = open(filename)
+    words = 0
+    for _word in file.read().split():
+        words += 1
+    return words
 
 
 def count_lines(filename: str) -> int:
     lines = 0
-    for _ in open(filename):
+    for _line in open(filename):
         lines += 1
     return lines
 
