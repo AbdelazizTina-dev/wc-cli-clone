@@ -1,5 +1,6 @@
 import cmd
 import os
+import sys
 from pathlib import Path
 
 
@@ -8,42 +9,40 @@ class WCCloneCli(cmd.Cmd):
     current_dir = os.getcwd()
 
     def do_ccwc(self, arg):
-        operation, file_name = parse(arg)
+        args = parse(arg)
+        operation = args[0]
+        file_name = args[1] if len(args) > 1 else None
+
+        file_content = (
+            Path(file_name).read_text() if file_name else sys.stdin.readlines()
+        )
 
         match operation:
             case "-c":
                 size = Path(f"{self.current_dir}/{file_name}/").stat().st_size
                 print(f"{size} {file_name}")
             case "-l":
-                print(f"{count_lines(file_name)} {file_name}")
+                print(f"{count_lines(file_content)} {file_name}")
             case "-w":
-                print(f"{count_words(file_name)} {file_name}")
+                print(f"{count_words(file_content)} {file_name}")
             case "-m":
-                print(f"{count_chars(file_name)} {file_name}")
+                print(f"{count_chars(file_content)} {file_name}")
 
 
-def count_chars(filename: str) -> int:
-    file = open(filename)
-    return len(file.read())
-
-def count_words(filename: str) -> int:
-    file = open(filename)
-    words = 0
-    for _word in file.read().split():
-        words += 1
-    return words
+def count_chars(file_content: str) -> int:
+    return len(file_content)
 
 
-def count_lines(filename: str) -> int:
-    lines = 0
-    for _line in open(filename):
-        lines += 1
-    return lines
+def count_words(file_content: str) -> int:
+    return len(file_content.split())
+
+
+def count_lines(file_content: str) -> int:
+    return file_content.count("\n")
 
 
 def parse(arg: str) -> tuple[str, str]:
-    "Convert a series of zero or more args to an argument tuple"
-    return tuple(arg.split())
+    return arg.split(" ")
 
 
 if __name__ == "__main__":
